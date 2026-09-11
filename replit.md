@@ -1,6 +1,6 @@
 # WhatsApp Webhook Server
 
-A minimal Express server for receiving and acknowledging WhatsApp webhook events.
+A deployable Express server for receiving WhatsApp webhook events and sending automatic replies through the WhatsApp Cloud API.
 
 ## Run & Operate
 
@@ -25,18 +25,18 @@ A minimal Express server for receiving and acknowledging WhatsApp webhook events
 
 ## Where things live
 
-- `artifacts/api-server/src/routes/whatsapp.ts` — WhatsApp webhook verification and message routes
+- `artifacts/api-server/src/routes/whatsapp.ts` — WhatsApp webhook verification, message handling, and Cloud API replies
 - `artifacts/api-server/src/routes/index.ts` — API route registration
 
 ## Architecture decisions
 
-- Webhook routes are exposed under `/api/webhook` through the existing API service prefix.
+- Webhook routes are exposed at `/webhook`; `/api/webhook` remains as a compatibility alias.
 - Verification uses `WHATSAPP_VERIFY_TOKEN`; message payload handling is intentionally left in `whatsapp.ts`.
 
 ## Product
 
-- Responds to Meta's GET webhook verification request.
-- Acknowledges incoming POST webhook payloads with HTTP 200.
+- Responds to Meta's GET `/webhook` verification request.
+- Acknowledges incoming POST `/webhook` payloads with HTTP 200 before sending the automatic reply.
 
 ## User preferences
 
