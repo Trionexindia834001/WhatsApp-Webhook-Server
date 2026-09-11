@@ -1,52 +1,24 @@
 # WhatsApp Webhook Server
 
-A deployable Express server for receiving WhatsApp webhook events and sending automatic replies through the WhatsApp Cloud API.
+Simple Node.js Express server for Meta's WhatsApp Cloud API.
 
-## Run & Operate
+## Run
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run start` — run the built production server through the root deployment entrypoint
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `PORT` — server port
-- Optional env: `WHATSAPP_VERIFY_TOKEN` — token used by Meta webhook verification
-- Optional env: `WHATSAPP_TOKEN` — WhatsApp Cloud API access token for future outbound messages
-- Optional env: `PHONE_NUMBER_ID` — WhatsApp phone number ID for future outbound messages
+```bash
+npm install
+npm start
+```
 
-## Stack
+The server listens on `process.env.PORT`, or port `3000` locally.
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+## Environment variables
 
-## Where things live
+- `VERIFY_TOKEN` or `WHATSAPP_VERIFY_TOKEN` — Meta webhook verification token
+- `WHATSAPP_TOKEN` — WhatsApp Cloud API access token
+- `PHONE_NUMBER_ID` — WhatsApp phone number ID
+- `WHATSAPP_API_VERSION` — optional Graph API version, default `v22.0`
 
-- `artifacts/api-server/src/routes/whatsapp.ts` — WhatsApp webhook verification, message handling, and Cloud API replies
-- `artifacts/api-server/src/routes/index.ts` — API route registration
+## Routes
 
-## Architecture decisions
-
-- Webhook routes are exposed at `/webhook`; `/api/webhook` remains as a compatibility alias.
-- Verification uses `WHATSAPP_VERIFY_TOKEN`; message payload handling is intentionally left in `whatsapp.ts`.
-
-## Product
-
-- Responds to Meta's GET `/webhook` verification request.
-- Acknowledges incoming POST `/webhook` payloads with HTTP 200 before sending the automatic reply.
-
-## User preferences
-
-- Keep the server minimal so custom WhatsApp message handling can be added later.
-
-## Gotchas
-
-- Set `WHATSAPP_VERIFY_TOKEN` to the same value configured in Meta before completing webhook verification.
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- `GET /webhook` — Meta webhook verification
+- `POST /webhook` — acknowledges incoming events immediately and sends replies asynchronously

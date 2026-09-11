@@ -1,20 +1,12 @@
 {
-  "name": "workspace",
-  "version": "0.0.0",
-  "license": "MIT",
+  "name": "whatsapp-webhook-server",
+  "version": "1.0.0",
+  "description": "Simple WhatsApp Cloud API webhook server",
+  "main": "server.js",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "build": "pnpm run typecheck && pnpm --filter @workspace/api-server run build",
-    "start": "node index.js",
-    "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "start": "node server.js"
   },
-  "private": true,
   "dependencies": {
-    "@replit/connectors-sdk": "^0.4.3"
-  },
-  "devDependencies": {
-    "prettier": "^3.9.6",
-    "typescript": "~5.9.3"
+    "express": "^4.19.2"
   }
 }
