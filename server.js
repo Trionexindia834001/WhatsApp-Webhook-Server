@@ -8,7 +8,12 @@ const VERIFY_TOKEN =
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const WHATSAPP_API_VERSION = process.env.WHATSAPP_API_VERSION || "v22.0";
-const REPLY_TEXT = "Aapka message mila";
+const PRICING_REPLY =
+  "Our pricing depends on the product or service. Please tell me what you are interested in.";
+const LOCATION_REPLY =
+  "Our business address is not configured yet. Please add it in server.js.";
+const GREETING_REPLY = "Hello! How can I help you?";
+const DEFAULT_REPLY = "How can I help you?";
 
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
@@ -37,13 +42,23 @@ async function replyToIncomingMessages(payload) {
 
   await Promise.all(
     messages.map((message) => {
-      const text = message.text
-        ? `${REPLY_TEXT}: "${message.text}"`
-        : `${REPLY_TEXT}.`;
-
-      return sendReply(message.from, text);
+      return sendReply(message.from, getReplyForMessage(message.text));
     }),
   );
+}
+
+function getReplyForMessage(message) {
+  const text = message.toLowerCase();
+
+  if (text.includes("price") || text.includes("cost")) {
+    return PRICING_REPLY;
+  } else if (text.includes("location") || text.includes("address")) {
+    return LOCATION_REPLY;
+  } else if (text.includes("hi") || text.includes("hello")) {
+    return GREETING_REPLY;
+  } else {
+    return DEFAULT_REPLY;
+  }
 }
 
 function getIncomingMessages(payload) {
