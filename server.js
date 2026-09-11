@@ -12,8 +12,10 @@ const PRICING_REPLY =
   "Our services start at ₹4999/month. Contact us for details.";
 const LOCATION_REPLY =
   "We are located at Kantatoli, Ranchi, Tata Road, near Union Bank.";
-const GREETING_REPLY = "Hello! How can I help you?";
-const DEFAULT_REPLY = "How can I help you?";
+const GREETING_REPLY =
+  "Hello! Welcome to Trionex India. How can I help you today?";
+const DEFAULT_REPLY =
+  "Thanks for reaching out! Type 'price' for pricing info or 'location' for our address.";
 
 app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
