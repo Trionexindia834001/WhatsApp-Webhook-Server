@@ -11,6 +11,8 @@ A minimal Express server for receiving and acknowledging WhatsApp webhook events
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `PORT` — server port
 - Optional env: `WHATSAPP_VERIFY_TOKEN` — token used by Meta webhook verification
+- Optional env: `WHATSAPP_TOKEN` — WhatsApp Cloud API access token for future outbound messages
+- Optional env: `PHONE_NUMBER_ID` — WhatsApp phone number ID for future outbound messages
 
 ## Stack
 
