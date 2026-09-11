@@ -9,9 +9,9 @@ const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const WHATSAPP_API_VERSION = process.env.WHATSAPP_API_VERSION || "v22.0";
 const PRICING_REPLY =
-  "Our pricing depends on the product or service. Please tell me what you are interested in.";
+  "Our services start at ₹4999/month. Contact us for details.";
 const LOCATION_REPLY =
-  "Our business address is not configured yet. Please add it in server.js.";
+  "We are located at Kantatoli, Ranchi, Tata Road, near Union Bank.";
 const GREETING_REPLY = "Hello! How can I help you?";
 const DEFAULT_REPLY = "How can I help you?";
 
