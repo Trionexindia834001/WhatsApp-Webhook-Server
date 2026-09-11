@@ -1,6 +1,6 @@
-# [Project name]
+# WhatsApp Webhook Server
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A minimal Express server for receiving and acknowledging WhatsApp webhook events.
 
 ## Run & Operate
 
@@ -9,7 +9,8 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `PORT` — server port
+- Optional env: `WHATSAPP_VERIFY_TOKEN` — token used by Meta webhook verification
 
 ## Stack
 
@@ -22,23 +23,26 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/api-server/src/routes/whatsapp.ts` — WhatsApp webhook verification and message routes
+- `artifacts/api-server/src/routes/index.ts` — API route registration
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Webhook routes are exposed under `/api/webhook` through the existing API service prefix.
+- Verification uses `WHATSAPP_VERIFY_TOKEN`; message payload handling is intentionally left in `whatsapp.ts`.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Responds to Meta's GET webhook verification request.
+- Acknowledges incoming POST webhook payloads with HTTP 200.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Keep the server minimal so custom WhatsApp message handling can be added later.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Set `WHATSAPP_VERIFY_TOKEN` to the same value configured in Meta before completing webhook verification.
 
 ## Pointers
 
