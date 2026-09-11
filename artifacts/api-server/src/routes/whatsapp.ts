@@ -2,16 +2,16 @@ import { Router, type IRouter } from "express";
 import type { Logger } from "pino";
 
 const router: IRouter = Router();
-const REPLY_TEXT = "Hello! Thanks for messaging. How can I help you?";
-
 router.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
+  const verifyToken =
+    process.env["WHATSAPP_VERIFY_TOKEN"] ?? process.env["VERIFY_TOKEN"];
 
   if (
     mode === "subscribe" &&
-    token === process.env["WHATSAPP_VERIFY_TOKEN"] &&
+    token === verifyToken &&
     typeof challenge === "string"
   ) {
     res.status(200).send(challenge);
@@ -29,14 +29,18 @@ router.post("/webhook", (req, res) => {
 });
 
 async function replyToIncomingMessages(payload: unknown, log: Logger) {
-  const recipients = getIncomingMessageSenders(payload);
+  const messages = getIncomingMessages(payload);
 
   await Promise.all(
-    recipients.map((recipient) => sendWhatsAppReply(recipient, log)),
+    messages.map(({ sender, text }) => sendWhatsAppReply(sender, text, log)),
   );
 }
 
-async function sendWhatsAppReply(recipient: string, log: Logger) {
+async function sendWhatsAppReply(
+  recipient: string,
+  incomingText: string,
+  log: Logger,
+) {
   const accessToken = process.env["WHATSAPP_TOKEN"];
   const phoneNumberId = process.env["PHONE_NUMBER_ID"];
 
@@ -62,7 +66,9 @@ async function sendWhatsAppReply(recipient: string, log: Logger) {
           to: recipient,
           type: "text",
           text: {
-            body: REPLY_TEXT,
+            body: incomingText
+              ? `Aapka message mila: "${incomingText}"`
+              : "Aapka message mila.",
           },
         }),
       },
@@ -86,12 +92,14 @@ async function sendWhatsAppReply(recipient: string, log: Logger) {
   }
 }
 
-function getIncomingMessageSenders(payload: unknown): string[] {
+function getIncomingMessages(
+  payload: unknown,
+): Array<{ sender: string; text: string }> {
   if (!isRecord(payload) || !Array.isArray(payload.entry)) {
     return [];
   }
 
-  const senders = new Set<string>();
+  const messages: Array<{ sender: string; text: string }> = [];
 
   for (const entry of payload.entry) {
     if (!isRecord(entry) || !Array.isArray(entry.changes)) {
@@ -115,13 +123,17 @@ function getIncomingMessageSenders(payload: unknown): string[] {
 
         const sender = message.from.trim();
         if (sender) {
-          senders.add(sender);
+          const text =
+            isRecord(message.text) && typeof message.text.body === "string"
+              ? message.text.body
+              : "";
+          messages.push({ sender, text });
         }
       }
     }
   }
 
-  return [...senders];
+  return messages;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
